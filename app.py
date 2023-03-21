@@ -4,8 +4,22 @@ from flask import Flask
 
 schoolURL = "https://school.busanedu.net/pcs-h/main.do"
 
-async def getMeal():
+def getMeal():
     res = requests.get(schoolURL)
     soup = BeautifulSoup(res.content, 'html.parser')
     mealList = soup.select_one('.meal_list').text
     return mealList
+
+app = Flask(__name__)
+
+@app.route("/", methods=["GET"])
+def main():
+    try:
+        meal = getMeal()
+        return meal
+    except Exception as e:
+        print(e)
+        return "<h1>오류가 발생하였습니다.</h1><h2>API 콘솔을 확인하여 주시기 바랍니다.</h2>", 500 
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=80)
